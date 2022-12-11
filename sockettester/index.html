@@ -34,7 +34,10 @@
       var socket = null;
 
       const activateHost = () => {
-        socket = io(document.getElementById("host").value);
+        socket = io(document.getElementById("host").value, {
+          reconnection: false,
+        });
+
         socket.on("connect", () => {
           // or with emit() and custom event names
           socket.emit("ping", "Hello World!");
@@ -47,6 +50,17 @@
         // handle the event sent with socket.send()
         socket.on("ping", (data) => {
           addBoard(data);
+        });
+
+        socket.on("connect_error", (err) => {
+          alert(`error connecting to the server due to ${err.message}`);
+        });
+
+        socket.on("disconnect", () => {
+          document.getElementById(
+            "connectme"
+          ).innerHTML = `<div><p>socket disconnected</p> <br> <button onclick="document.location.reload(true)">refresh page</button></div>`;
+          alert(`socket disconnected please reload page`);
         });
       };
 
